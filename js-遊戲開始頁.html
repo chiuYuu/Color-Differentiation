@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>色辨遊戲簡易版</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+
+        #container {
+            width: 100%;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #F06060;
+            position: relative;
+            text-align: center;
+            line-height: 2;
+            flex-wrap: wrap;
+            flex-direction: column;
+            font-family: '俐方體11號';
+        }
+
+        button {
+            margin-top: 20px;
+            width: 200px;
+            height: 60px;
+            background-color: #3b93d2;
+            border: 5px outset whitesmoke;
+            font-size: 32px;
+            font-family: '俐方體11號';
+            cursor: pointer;
+        }
+
+        button:hover {
+            color: aliceblue;
+            background-color: #4dd23b;
+        }
+
+        .alert-text {
+            margin-top: 20px;
+            color: azure;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="container">
+        <h1> 免費色弱遊戲 ᕕ(ᐛ)ᕗ <br> The Color! ᕕ(ᐛ)ᕗ <br> 找出不同顏色的色塊 ᕕ(ᐛ)ᕗ <br> Click it! ᕕ(ᐛ)ᕗ </h1>
+        <div>
+            <a href="./js-色辨遊戲-初級.html">
+                <button type="button">初級</button>
+            </a>
+
+            <a href="./js-色辨遊戲-進階.html">
+                <button type="button">進階</button>
+            </a>
+
+            <a href="./js-色辨遊戲-挑戰版.html">
+                <button type="button">限時</button>
+            </a>
+        </div>
+
+
+        <div class="alert-text">
+            <h3>初階模式：2x2 色弱辨識，得八分即成功</h3>
+            <h3>進階模式：2x2 ~ 7x7色弱辨識，得30分即成功</h3>
+            <h3>限時模式：ㄏㄏㄏㄏㄏ限時 60 秒，方塊無上限(進入便開始倒數!!!)</h3>
+        </div>
+    </section>
+</body>
+
+</html>

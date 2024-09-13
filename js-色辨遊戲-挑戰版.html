@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>色辨遊戲簡易版</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+
+        #container {
+            width: 100%;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #F06060;
+            position: relative;
+        }
+
+        #score-box {
+            width: 200px;
+            height: 100px;
+            background-color: whitesmoke;
+            border: 5px dashed #3b93d2;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            line-height: 90px;
+            text-align: center;
+        }
+
+        #score-text {
+            font-size: 48px;
+            font-family: '俐方體11號';
+            color: #3b93d2;
+            font-weight: bolder;
+        }
+
+        #time-box {
+            width: 200px;
+            height: 100px;
+            background-color: #ddd;
+            border: 10px inset #d33434;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            line-height: 90px;
+            text-align: center;
+        }
+
+        #time-text {
+            font-size: 48px;
+            font-family: '俐方體11號';
+            color: #d33434;
+            font-weight: bolder;
+        }
+
+        #pause-box {
+            width: 190px;
+            height: 60px;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #3b93d2;
+            border: 5px outset whitesmoke;
+            color: #ddd;
+            font-size: 32px;
+            font-family: '俐方體11號';
+            cursor: pointer;
+        }
+
+        #cube-box {
+            width: 500px;
+            height: 500px;
+            background-color: #ddd;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            cursor: pointer;
+            justify-content: space-between;
+        }
+
+        .color,
+        .color-opacity {
+            margin: 5px;
+        }
+
+        #back {
+            margin-top: 20px;
+            width: 200px;
+            height: 60px;
+            background-color: #3b93d2;
+            border: 5px outset whitesmoke;
+            font-size: 32px;
+            font-family: '俐方體11號';
+            cursor: pointer;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+
+        #back:hover {
+            color: aliceblue;
+            background-color: #4dd23b;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="container">
+        <div id="score-box">
+            <span id="score-text"></span>
+        </div>
+
+        <div id="time-box">
+            <span id="time-text">60</span>
+        </div>
+
+        <div >
+            <button id="pause-box" type="button">暫停</button>
+        </div>
+
+        <div id="cube-box"></div>
+
+        <a href="./js-遊戲開始頁.html">
+            <button id="back" type="button">回選擇頁</button>
+        </a>
+    </section>
+
+    <script>
+        // 1. 畫面上印出 2 * 2 的顏色隨機的方塊
+        // 2. 隨機一個方塊的顏色較透明，表示這是答案
+        // 3. 使用者點擊答案方塊後，重新生成新的顏色隨機的方塊
+        // 4. 每過一關方塊數量會增加，最高生成 8 * 8 的顏色隨機的方塊
+        // 5. 有計分器及計時器，60秒倒數，時間到則跳出恭喜並顯示獲得幾分，並重頭開始遊戲
+
+        const cube = document.querySelector('#cube-box'); // 全域變數
+        const scoreText = document.querySelector('#score-text');
+        const timeCount = document.querySelector('#time-text');
+        const pause = document.querySelector('#pause-box');
+
+        let winTimes = 0;
+        let score = 0; 
+        let boxNum = 2; // 讓一開始的 box 數量為2
+        let timeLeft = 60;
+        let isPause = false;
+
+        // 呼叫生成方塊
+        createCube();
+        timeCountDown();
+        
+        // 設一個倒數計時的函式
+        function timeCountDown() {
+            if (!isPause && timeLeft > 0) {
+                timeLeft--;
+                timeCount.textContent = timeLeft;
+            } 
+
+            if(timeLeft > 0){
+                setTimeout(timeCountDown, 1000);
+            } else {
+                alert('時間到了 再來一次\r Δ~~~Δ \r ξ ･ェ･ ξ \r ξ　~　ξ \r  ξ　　 ξ \r  ξ　　  “~～~～〇 \r  ξ　　　　　　 ξ \r   ξ   ξ   ξ~～~ξ   ξ \r　ξ_ξξ_ξ　ξ_ξξ_ξ \r 琦玉ެ （𐓃ⲹ𐓃） ު \r 　　⣠⣶⡾⠏⠉⠙⠳⢦⡀⠀⠀   ⢠⠞⠉⠙⠲⡀⠀\r ⠀⠀⠀⣴⠿⠏⠀⠀⠀⠀⠀⠀ ⢳⡀⠀  ⡏⠀    ⢷ \r ⠀⠀⢠⣟⣋⡀⢀⣀⣀⡀⠀⣀⡀⣧⠀ ⢸  ⠀    ⡇ \r ⠀⠀⢸⣯⡭⠁⠸⣛⣟⠆⡴⣻⡲⣿⠀⣸⠀   ？  ⡇ \r ⠀⠀⣟⣿⡭⠀⠀⠀⠀⠀⢱⠀⠀ ⣿⠀⢹⠀⠀     ⡇ \r ⠀⠀⠙⢿⣯⠄⠀⠀⠀⢀⡀⠀⠀⡿⠀  ⡇    ⡼ \r ⠀⠀⠀⠀⠹⣶⠆⠀⠀⠀⠀⠀⡴⠃⠀⠀⠘⠤⣄⣠⠞⠀ \r ⠀⠀⠀⠀⠀⢸⣷⡦⢤⡤⢤⣞⣁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\r ⠀⠀⢀⣤⣴⣿⣏⠁⠀⠀⠸⣏⢯⣷⣖⣦⡀⠀⠀⠀⠀⠀\r ⢀⣾⣽⣿⣿⣿⣿⠛⢲⣶⣾⢉⡷⣿⣿⠵⣿⠀⠀⠀⠀⠀\r⠀⣼⣿⠍⠉⣿⡭⠉⠙⢺⣇⣼⡏⠀⠀⠀⣄⢸⠀⠀⠀⠀⠀⠀\r ⣿⣿⣧⣀⣿.........⣀⣰⣏⣘⣆........');
+            }
+        }
+
+        pause.addEventListener('click', function(){
+            isPause = !isPause;
+            if (isPause) {
+                pause.textContent = '繼續';
+                cube.style.pointerEvents = 'none'; // 點暫停之後不可以偷點方塊
+            } else {
+                pause.textContent = '暫停';
+                cube.style.pointerEvents = 'auto';
+            }
+        });
+
+        // 設一個function 去生成隨機的rgb 與 opacity 的值 (有重複幾次就呼叫這個function)
+        function colorSettings() {
+            let r = Math.floor(Math.random() * 256);
+            let g = Math.floor(Math.random() * 256);
+            let b = Math.floor(Math.random() * 256);
+            let o = (Math.random() * (0.8 - 0.3) + 0.3).toFixed(1);
+            // 將這些值打包傳回去
+            return { r, g, b, o };
+        }
+
+        // 生成方塊的函式
+        function createCube() {
+            let { r, g, b, o } = colorSettings();
+            let littleCube = ''
+
+            // 設定生出來的 cube 在 cube-box 內的大小
+            const boxTotal = boxNum * boxNum;
+            const randomCube = Math.floor(Math.random() * boxTotal);
+            // cube-box 的 px - 左右padding px - (box + 每一個box行列間的間距) * 兩邊的margin px
+            const weightAndHeight = (500 - 2 * 10 - (boxNum + 1) * 5 * 2) / boxNum;
+
+            for (let i = 0; i < boxTotal; i++) {
+                // 隨機產生 0 ~ 3 的數字
+                if (i === randomCube) {
+                    littleCube += `<div class="color-opacity"; style="width: ${weightAndHeight}px; height:${weightAndHeight} px; background-color: rgb(${r}, ${g}, ${b}, ${o})"></div>`;
+                } else {
+                    littleCube += `<div class="color"; style="width: ${weightAndHeight}px; height:${weightAndHeight} px; background-color: rgb(${r}, ${g}, ${b})"></div>`;
+                }
+            }
+            cube.innerHTML = littleCube;
+            // 呼叫綁定事件的函式
+            clickCubeEvent();
+        }
+
+        function clickCubeEvent() {
+            document.querySelector('.color-opacity').addEventListener('click', function () {
+                winTimes++;
+                score++;
+                if (timeLeft === 0) {
+
+                    winTimes = 0;
+                    score = 0;
+                    boxNum = 2;
+                    timeLeft = 60;
+                    timeCountDown();
+                } else if (score % 4 === 0) {
+                    boxNum++;
+                }
+                console.log(score);
+                scoreText.textContent = score;
+                createCube();
+            });
+        }
+    </script>
+</body>
+
+</html>
